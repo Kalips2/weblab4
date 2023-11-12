@@ -6,9 +6,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000',
-        methods: ['GET', 'POST'],
-        credentials: true,
+        origin: 'http://localhost:3000', // ваші довірені джерела
+        methods: ['GET', 'POST'], // дозволені методи
+        credentials: true, // дозволяє передавати кредити в разі необхідності
     },
 });
 
@@ -45,11 +45,11 @@ io.on('connection', (socket) => {
         // Зберігаємо новий стан дошки
         if (rooms[roomId]) {
             rooms[roomId].lines = data
-            console.log("[EXIST UPDATED] Lines for roomId = " + roomId + ", data length is " + rooms[roomId].lines.length)
+            io.to(roomId).emit('draw', data, roomId);
         } else {
             rooms[roomId] = {lines: [], users: [socket.id]};
             rooms[roomId].lines = data
-            io.to(roomId).emit('draw', rooms[roomId].lines, roomId);
+            io.to(roomId).emit('draw', data, roomId);
         }
     });
 

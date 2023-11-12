@@ -32,7 +32,6 @@ const App = () => {
         const pos = e.target.getStage().getPointerPosition();
         const newLine = [pos.x, pos.y];
         lines.push(newLine)
-        setLines(lines);
         if(roomIdInput.current.value) socket.current.emit('draw', lines, roomIdInput.current.value);
     };
 
@@ -93,7 +92,7 @@ const App = () => {
                             tension={0.5}
                             lineCap="round"
                             lineJoin="round"
-                            globalCompositeOperation={ tool === 'eraser' ? 'destination-out' : 'source-over'}
+                            globalCompositeOperation={'source-over'}
                         />
                     ))}
                 </Layer>
