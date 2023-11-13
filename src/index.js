@@ -31,7 +31,8 @@ const App = () => {
         isDrawing.current = true;
         const pos = e.target.getStage().getPointerPosition();
         const newLine = [pos.x, pos.y];
-        lines.push(newLine)
+        lines.push({tool, line: newLine})
+        setLines(lines);
         if(roomIdInput.current.value) socket.current.emit('draw', lines, roomIdInput.current.value);
     };
 
@@ -44,10 +45,11 @@ const App = () => {
         const stage = e.target.getStage();
         const point = stage.getPointerPosition();
         let lastLine = lines[lines.length - 1];
-        lastLine = lastLine.concat([point.x, point.y]);
-
+        let coordinates = lastLine.line.concat([point.x, point.y]);
+        let tool = lastLine.tool
+        let newLastLine = {tool, line: coordinates}
         // replace last
-        lines.splice(lines.length - 1, 1, lastLine);
+        lines.splice(lines.length - 1, 1, newLastLine);
         setLines(lines.concat());
         if(roomIdInput.current.value) socket.current.emit('draw', lines, roomIdInput.current.value);
     };
@@ -86,13 +88,13 @@ const App = () => {
                     {lines.map((line, i) => (
                         <Line
                             key={i}
-                            points={line}
+                            points={line.line}
                             stroke="#df4b26"
                             strokeWidth={5}
                             tension={0.5}
                             lineCap="round"
                             lineJoin="round"
-                            globalCompositeOperation={'source-over'}
+                            globalCompositeOperation={ line.tool === 'eraser' ? 'destination-out' : 'source-over'}
                         />
                     ))}
                 </Layer>
